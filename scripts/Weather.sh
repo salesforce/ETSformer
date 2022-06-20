@@ -1,0 +1,75 @@
+python -u run.py \
+  --root_path ./dataset/weather/ \
+  --data_path weather.csv \
+  --model_id weather \
+  --model ETSformer \
+  --data custom \
+  --features M \
+  --seq_len 192 \
+  --pred_len 96 \
+  --e_layers 2 \
+  --d_layers 2 \
+  --enc_in 21 \
+  --dec_in 21 \
+  --c_out 21 \
+  --des 'Exp' \
+  --K 1 \
+  --learning_rate 1e-3 \
+  --itr 1
+
+python -u run.py \
+  --root_path ./dataset/weather/ \
+  --data_path weather.csv \
+  --model_id weather \
+  --model ETSformer \
+  --data custom \
+  --features M \
+  --seq_len 192 \
+  --pred_len 192 \
+  --e_layers 2 \
+  --d_layers 2 \
+  --enc_in 21 \
+  --dec_in 21 \
+  --c_out 21 \
+  --des 'Exp' \
+  --K 1 \
+  --learning_rate 1e-3 \
+  --itr 1
+
+python -u run.py \
+  --root_path ./dataset/weather/ \
+  --data_path weather.csv \
+  --model_id weather \
+  --model ETSformer \
+  --data custom \
+  --features M \
+  --seq_len 720 \
+  --pred_len 336 \
+  --e_layers 2 \
+  --d_layers 2 \
+  --enc_in 21 \
+  --dec_in 21 \
+  --c_out 21 \
+  --des 'Exp' \
+  --K 3 \
+  --learning_rate 3e-4 \
+  --itr 1
+
+python -u run.py \
+  --root_path ./dataset/weather/ \
+  --data_path weather.csv \
+  --model_id weather \
+  --model ETSformer \
+  --data custom \
+  --features M \
+  --seq_len 720 \
+  --pred_len 720 \
+  --e_layers 2 \
+  --d_layers 2 \
+  --enc_in 21 \
+  --dec_in 21 \
+  --c_out 21 \
+  --des 'Exp' \
+  --K 3 \
+  --learning_rate 3e-4 \
+  --itr 1

@@ -1,0 +1,77 @@
+python -u run.py \
+  --root_path ./dataset/electricity/ \
+  --data_path electricity.csv \
+  --model_id ECL \
+  --model ETSformer \
+  --data custom \
+  --features M \
+  --seq_len 336 \
+  --pred_len 96 \
+  --e_layers 2 \
+  --d_layers 2 \
+  --enc_in 321 \
+  --dec_in 321 \
+  --c_out 321 \
+  --des 'Exp' \
+  --K 3 \
+  --learning_rate 3e-4 \
+  --itr 1
+
+python -u run.py \
+  --root_path ./dataset/electricity/ \
+  --data_path electricity.csv \
+  --model_id ECL \
+  --model ETSformer \
+  --data custom \
+  --features M \
+  --seq_len 336 \
+  --pred_len 192 \
+  --e_layers 2 \
+  --d_layers 2 \
+  --enc_in 321 \
+  --dec_in 321 \
+  --c_out 321 \
+  --des 'Exp' \
+  --K 3 \
+  --learning_rate 3e-4 \
+  --itr 1
+
+python -u run.py \
+  --is_training 1 \
+  --root_path ./dataset/electricity/ \
+  --data_path electricity.csv \
+  --model_id ECL \
+  --model ETSformer \
+  --data custom \
+  --features M \
+  --seq_len 336 \
+  --pred_len 336 \
+  --e_layers 2 \
+  --d_layers 2 \
+  --enc_in 321 \
+  --dec_in 321 \
+  --c_out 321 \
+  --des 'Exp' \
+  --K 3 \
+  --learning_rate 3e-4 \
+  --itr 1
+
+python -u run.py \
+  --is_training 1 \
+  --root_path ./dataset/electricity/ \
+  --data_path electricity.csv \
+  --model_id ECL \
+  --model ETSformer \
+  --data custom \
+  --features M \
+  --seq_len 336 \
+  --pred_len 720 \
+  --e_layers 2 \
+  --d_layers 2 \
+  --enc_in 321 \
+  --dec_in 321 \
+  --c_out 321 \
+  --des 'Exp' \
+  --K 3 \
+  --learning_rate 1e-4 \
+  --itr 1

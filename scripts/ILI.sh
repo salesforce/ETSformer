@@ -1,0 +1,75 @@
+python -u run.py \
+  --root_path ./dataset/illness/ \
+  --data_path national_illness.csv \
+  --model_id ili \
+  --model ETSformer \
+  --data custom \
+  --features M \
+  --seq_len 48 \
+  --pred_len 24 \
+  --e_layers 2 \
+  --d_layers 2 \
+  --enc_in 7 \
+  --dec_in 7 \
+  --c_out 7 \
+  --des 'Exp' \
+  --K 1 \
+  --learning_rate 1e-3 \
+  --itr 1
+
+python -u run.py \
+  --root_path ./dataset/illness/ \
+  --data_path national_illness.csv \
+  --model_id ili \
+  --model ETSformer \
+  --data custom \
+  --features M \
+  --seq_len 60 \
+  --pred_len 36 \
+  --e_layers 2 \
+  --d_layers 2 \
+  --enc_in 7 \
+  --dec_in 7 \
+  --c_out 7 \
+  --des 'Exp' \
+  --K 1 \
+  --learning_rate 1e-3 \
+  --itr 1
+
+python -u run.py \
+  --root_path ./dataset/illness/ \
+  --data_path national_illness.csv \
+  --model_id ili \
+  --model ETSformer \
+  --data custom \
+  --features M \
+  --seq_len 60 \
+  --pred_len 48 \
+  --e_layers 2 \
+  --d_layers 2 \
+  --enc_in 7 \
+  --dec_in 7 \
+  --c_out 7 \
+  --des 'Exp' \
+  --K 1 \
+  --learning_rate 1e-3 \
+  --itr 1
+
+python -u run.py \
+  --root_path ./dataset/illness/ \
+  --data_path national_illness.csv \
+  --model_id ili \
+  --model ETSformer \
+  --data custom \
+  --features M \
+  --seq_len 60 \
+  --pred_len 60 \
+  --e_layers 2 \
+  --d_layers 2 \
+  --enc_in 7 \
+  --dec_in 7 \
+  --c_out 7 \
+  --des 'Exp' \
+  --K 1 \
+  --learning_rate 1e-3 \
+  --itr 1
