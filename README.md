@@ -1,8 +1,10 @@
 # ETSformer: Exponential Smoothing Transformers for Time-series Forecasting
+<img src="pics/etsformer.png" width="700">
+
+Official PyTorch code repository for the [ETSformer paper](https://arxiv.org/abs/2202.01381).
 
 ## Requirements
-
-Official PyTorch code repository for the [ETSformer paper](https://arxiv.org/abs/2202.01381). Required dependencies can be installed by:
+Required dependencies can be installed by:
 ```bash
 pip install -r requirements.txt
 ```
