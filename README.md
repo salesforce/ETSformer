@@ -35,8 +35,6 @@ replace the self-attention mechanism in vanilla Transformers, thus improving bot
    e.g. `./scripts/ETTm2.sh`. You might have to change permissions on the script files by running`chmod u+x scripts/*`.
 4. The script for grid search is also provided, and can be run by `./grid_search.sh`.
 
-## Main Results
-
 ## Acknowledgements
 
 The implementation of ETSformer relies on resources from the following codebases and repositories, we thank the original
