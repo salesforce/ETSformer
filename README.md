@@ -6,7 +6,7 @@
 <b>Figure 1.</b> Overall ETSformer Architecture.
 </p>
 
-Official PyTorch code repository for the [ETSformer paper](https://arxiv.org/abs/2202.01381).
+Official PyTorch code repository for the [ETSformer paper](https://arxiv.org/abs/2202.01381). Check out our [blog post](https://blog.salesforceairesearch.com/etsformer-time-series-forecasting/)!
 
 * ETSformer is a novel time-series Transformer architecture which exploits the principle of exponential smoothing in improving
 Transformers for timeseries forecasting.
