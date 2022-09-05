@@ -5,7 +5,7 @@ from einops import rearrange, reduce, repeat
 
 class DampingLayer(nn.Module):
 
-    def __init__(self, d_model, pred_len, nhead, dropout=0.1):
+    def __init__(self, pred_len, nhead, dropout=0.1):
         super().__init__()
         self.pred_len = pred_len
         self.nhead = nhead
@@ -13,16 +13,16 @@ class DampingLayer(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
-        x = repeat(x, 'B () D -> B T D', T=self.pred_len)
-        B, T, D = x.shape
+        x = repeat(x, 'b 1 d -> b t d', t=self.pred_len)
+        b, t, d = x.shape
 
         powers = torch.arange(self.pred_len).to(self._damping_factor.device) + 1
         powers = powers.view(self.pred_len, 1)
         damping_factors = self.damping_factor ** powers
         damping_factors = damping_factors.cumsum(dim=0)
-        x = x.view(B, T, self.nhead, -1)
+        x = x.view(b, t, self.nhead, -1)
         x = self.dropout(x) * damping_factors.unsqueeze(-1)
-        return x.view(B, T, D)
+        return x.view(b, t, d)
 
     @property
     def damping_factor(self):
@@ -38,7 +38,7 @@ class DecoderLayer(nn.Module):
         self.c_out = c_out
         self.pred_len = pred_len
 
-        self.growth_damping = DampingLayer(d_model, pred_len, nhead, dropout=dropout)
+        self.growth_damping = DampingLayer(pred_len, nhead, dropout=dropout)
         self.dropout1 = nn.Dropout(dropout)
 
     def forward(self, growth, season):

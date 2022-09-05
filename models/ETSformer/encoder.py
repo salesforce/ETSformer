@@ -30,13 +30,13 @@ class GrowthLayer(nn.Module):
         :param inputs: shape: (batch, seq_len, dim)
         :return: shape: (batch, seq_len, dim)
         """
-        B, T, D = inputs.shape
-        values = self.in_proj(inputs).view(B, T, self.nhead, -1)
-        values = torch.cat([repeat(self.z0, 'H D -> B () H D', B=B), values], dim=1)
+        b, t, d = inputs.shape
+        values = self.in_proj(inputs).view(b, t, self.nhead, -1)
+        values = torch.cat([repeat(self.z0, 'h d -> b 1 h d', b=b), values], dim=1)
         values = values[:, 1:] - values[:, :-1]
         out = self.es(values)
-        out = torch.cat([repeat(self.es.v0, 'H D -> B () H D', B=B), out], dim=1)
-        out = rearrange(out, 'B T H D -> B T (H D)')
+        out = torch.cat([repeat(self.es.v0, '1 1 h d -> b 1 h d', b=b), out], dim=1)
+        out = rearrange(out, 'b t h d -> b t (h d)')
         return self.out_proj(out)
 
 
@@ -50,35 +50,35 @@ class FourierLayer(nn.Module):
         self.low_freq = low_freq
 
     def forward(self, x):
-        """x: (B T D)"""
-        B, T, D = x.shape
+        """x: (b, t, d)"""
+        b, t, d = x.shape
         x_freq = fft.rfft(x, dim=1)
 
-        if T % 2 == 0:
+        if t % 2 == 0:
             x_freq = x_freq[:, self.low_freq:-1]
-            f = fft.rfftfreq(T)[self.low_freq:-1]
+            f = fft.rfftfreq(t)[self.low_freq:-1]
         else:
             x_freq = x_freq[:, self.low_freq:]
-            f = fft.rfftfreq(T)[self.low_freq:]
+            f = fft.rfftfreq(t)[self.low_freq:]
 
         x_freq, index_tuple = self.topk_freq(x_freq)
-        f = repeat(f, 'F -> B F D', B=x_freq.size(0), D=x_freq.size(2))
-        f = rearrange(f[index_tuple], 'B F D -> B F () D').to(x_freq.device)
+        f = repeat(f, 'f -> b f d', B=x_freq.size(0), D=x_freq.size(2))
+        f = rearrange(f[index_tuple], 'b f d -> b f () d').to(x_freq.device)
 
-        return self.extrapolate(x_freq, f, T)
+        return self.extrapolate(x_freq, f, t)
 
-    def extrapolate(self, x_freq, f, T):
+    def extrapolate(self, x_freq, f, t):
         x_freq = torch.cat([x_freq, x_freq.conj()], dim=1)
         f = torch.cat([f, -f], dim=1)
-        t = rearrange(torch.arange(T + self.pred_len, dtype=torch.float),
-                      'T -> () () T ()').to(x_freq.device)
+        t = rearrange(torch.arange(t + self.pred_len, dtype=torch.float),
+                      't -> () () t ()').to(x_freq.device)
 
-        amp = rearrange(x_freq.abs() / T, 'B F D -> B F () D')
-        phase = rearrange(x_freq.angle(), 'B F D -> B F () D')
+        amp = rearrange(x_freq.abs() / t, 'b f d -> b f () d')
+        phase = rearrange(x_freq.angle(), 'b f d -> b f () d')
 
         x_time = amp * torch.cos(2 * math.pi * f * t + phase)
 
-        return reduce(x_time, 'B F T D -> B T D', 'sum')
+        return reduce(x_time, 'b f t d -> b t d', 'sum')
 
     def topk_freq(self, x_freq):
         values, indices = torch.topk(x_freq.abs(), self.k, dim=1, largest=True, sorted=True)
@@ -101,24 +101,25 @@ class LevelLayer(nn.Module):
         self.season_pred = nn.Linear(self.d_model, self.c_out)
 
     def forward(self, level, growth, season):
-        B, T, _ = level.shape
-        growth = self.growth_pred(growth).view(B, T, self.c_out, 1)
-        season = self.season_pred(season).view(B, T, self.c_out, 1)
-        growth = growth.view(B, T, self.c_out, 1)
-        season = season.view(B, T, self.c_out, 1)
-        level = level.view(B, T, self.c_out, 1)
+        b, t, _ = level.shape
+        growth = self.growth_pred(growth).view(b, t, self.c_out, 1)
+        season = self.season_pred(season).view(b, t, self.c_out, 1)
+        growth = growth.view(b, t, self.c_out, 1)
+        season = season.view(b, t, self.c_out, 1)
+        level = level.view(b, t, self.c_out, 1)
         out = self.es(level - season, aux_values=growth)
-        out = rearrange(out, 'B T H D -> B T (H D)')
+        out = rearrange(out, 'b t h d -> b t (h d)')
         return out
 
 class EncoderLayer(nn.Module):
 
-    def __init__(self, d_model, nhead, c_out, pred_len, k, dim_feedforward=None, dropout=0.1,
+    def __init__(self, d_model, nhead, c_out, seq_len, pred_len, k, dim_feedforward=None, dropout=0.1,
                  activation='sigmoid', layer_norm_eps=1e-5):
         super().__init__()
         self.d_model = d_model
         self.nhead = nhead
         self.c_out = c_out
+        self.seq_len = seq_len
         self.pred_len = pred_len
         dim_feedforward = dim_feedforward or 4 * d_model
         self.dim_feedforward = dim_feedforward

@@ -1,3 +1,5 @@
+import math
+
 import torch
 import torch.nn as nn
 import torch.fft as fft
@@ -29,18 +31,17 @@ class ExponentialSmoothing(nn.Module):
     def __init__(self, dim, nhead, dropout=0.1, aux=False):
         super().__init__()
         self._smoothing_weight = nn.Parameter(torch.randn(nhead, 1))
-        self.v0 = nn.Parameter(torch.randn(nhead, dim))
+        self.v0 = nn.Parameter(torch.randn(1, 1, nhead, dim))
         self.dropout = nn.Dropout(dropout)
         if aux:
             self.aux_dropout = nn.Dropout(dropout)
 
     def forward(self, values, aux_values=None):
-        B, T, H, D = values.shape
+        b, t, h, d = values.shape
 
-        init_weight, weight = self.get_exponential_weight(T)
+        init_weight, weight = self.get_exponential_weight(t)
         output = conv1d_fft(self.dropout(values), weight, dim=1)
-        v0 = repeat(self.v0, 'H D -> () () H D')
-        output = init_weight * v0 + output
+        output = init_weight * self.v0 + output
 
         if aux_values is not None:
             aux_weight = weight / (1 - self.weight) * self.weight
@@ -59,8 +60,8 @@ class ExponentialSmoothing(nn.Module):
         # \alpha^t for all t = 1, 2, ..., T
         init_weight = self.weight ** (powers + 1)
 
-        return rearrange(init_weight, 'H T -> () T H ()'), \
-               rearrange(weight, 'H T -> () T H ()')
+        return rearrange(init_weight, 'h t -> () t h ()'), \
+               rearrange(weight, 'h t -> () t h ()')
 
     @property
     def weight(self):

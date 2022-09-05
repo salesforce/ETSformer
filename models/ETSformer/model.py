@@ -43,7 +43,7 @@ class ETSformer(nn.Module):
         self.encoder = Encoder(
             [
                 EncoderLayer(
-                    configs.d_model, configs.n_heads, configs.c_out, configs.pred_len, configs.K,
+                    configs.d_model, configs.n_heads, configs.c_out, configs.seq_len, configs.pred_len, configs.K,
                     dim_feedforward=configs.d_ff,
                     dropout=configs.dropout,
                     activation=configs.activation,
