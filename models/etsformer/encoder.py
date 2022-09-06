@@ -35,7 +35,7 @@ class GrowthLayer(nn.Module):
         values = torch.cat([repeat(self.z0, 'h d -> b 1 h d', b=b), values], dim=1)
         values = values[:, 1:] - values[:, :-1]
         out = self.es(values)
-        out = torch.cat([repeat(self.es.v0, '1 1 h d -> b 1 h d', b=b), out], dim=1)
+        out = torch.cat([repeat(self.es.v0, 'h d -> b 1 h d', b=b), out], dim=1)
         out = rearrange(out, 'b t h d -> b t (h d)')
         return self.out_proj(out)
 
@@ -62,7 +62,7 @@ class FourierLayer(nn.Module):
             f = fft.rfftfreq(t)[self.low_freq:]
 
         x_freq, index_tuple = self.topk_freq(x_freq)
-        f = repeat(f, 'f -> b f d', B=x_freq.size(0), D=x_freq.size(2))
+        f = repeat(f, 'f -> b f d', b=x_freq.size(0), d=x_freq.size(2))
         f = rearrange(f[index_tuple], 'b f d -> b f () d').to(x_freq.device)
 
         return self.extrapolate(x_freq, f, t)
@@ -70,13 +70,13 @@ class FourierLayer(nn.Module):
     def extrapolate(self, x_freq, f, t):
         x_freq = torch.cat([x_freq, x_freq.conj()], dim=1)
         f = torch.cat([f, -f], dim=1)
-        t = rearrange(torch.arange(t + self.pred_len, dtype=torch.float),
+        t_val = rearrange(torch.arange(t + self.pred_len, dtype=torch.float),
                       't -> () () t ()').to(x_freq.device)
 
         amp = rearrange(x_freq.abs() / t, 'b f d -> b f () d')
         phase = rearrange(x_freq.angle(), 'b f d -> b f () d')
 
-        x_time = amp * torch.cos(2 * math.pi * f * t + phase)
+        x_time = amp * torch.cos(2 * math.pi * f * t_val + phase)
 
         return reduce(x_time, 'b f t d -> b t d', 'sum')
 
