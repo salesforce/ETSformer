@@ -35,7 +35,7 @@ class GrowthLayer(nn.Module):
         values = torch.cat([repeat(self.z0, 'h d -> b 1 h d', b=b), values], dim=1)
         values = values[:, 1:] - values[:, :-1]
         out = self.es(values)
-        out = torch.cat([repeat(self.es.v0, 'h d -> b 1 h d', b=b), out], dim=1)
+        out = torch.cat([repeat(self.es.v0, '1 1 h d -> b 1 h d', b=b), out], dim=1)
         out = rearrange(out, 'b t h d -> b t (h d)')
         return self.out_proj(out)
 

@@ -34,7 +34,7 @@ class ETSformer(nn.Module):
 
         self.configs = configs
 
-        assert configs.d_layers == configs.e_layers
+        assert configs.e_layers == configs.d_layers, "Encoder and decoder layers must be equal"
 
         # Embedding
         self.enc_embedding = ETSEmbedding(configs.enc_in, configs.d_model, dropout=configs.dropout)

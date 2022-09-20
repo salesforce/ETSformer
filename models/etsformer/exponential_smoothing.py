@@ -60,8 +60,8 @@ class ExponentialSmoothing(nn.Module):
         # \alpha^t for all t = 1, 2, ..., T
         init_weight = self.weight ** (powers + 1)
 
-        return rearrange(init_weight, 'h t -> () t h ()'), \
-               rearrange(weight, 'h t -> () t h ()')
+        return rearrange(init_weight, 'h t -> 1 t h 1'), \
+               rearrange(weight, 'h t -> 1 t h 1')
 
     @property
     def weight(self):
