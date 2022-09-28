@@ -57,6 +57,7 @@ parser.add_argument('--std', type=float, default=0.2)
 
 parser.add_argument('--smoothing_learning_rate', type=float, default=0, help='optimizer learning rate')
 parser.add_argument('--damping_learning_rate', type=float, default=0, help='optimizer learning rate')
+parser.add_argument('--output_attention', type=bool, default=False)
 
 # optimization
 parser.add_argument('--optim', type=str, default='adam', help='optimizer')
