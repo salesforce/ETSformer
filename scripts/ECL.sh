@@ -37,7 +37,6 @@ python -u run.py \
   --itr 1
 
 python -u run.py \
-  --is_training 1 \
   --root_path ./dataset/electricity/ \
   --data_path electricity.csv \
   --model_id ECL \
@@ -57,7 +56,6 @@ python -u run.py \
   --itr 1
 
 python -u run.py \
-  --is_training 1 \
   --root_path ./dataset/electricity/ \
   --data_path electricity.csv \
   --model_id ECL \
